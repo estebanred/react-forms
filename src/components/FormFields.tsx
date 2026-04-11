@@ -1,6 +1,6 @@
-import Email from "./Email";
-import Text from "./Text";
-import TextArea from "./TextArea";
+import Email from "./field-types/Email";
+import Text from "./field-types/Text";
+import TextArea from "./field-types/TextArea";
 import type { FormApi, FormField } from "../types/types";
 
 const formFields = [

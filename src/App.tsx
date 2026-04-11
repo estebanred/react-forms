@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import { formDefaultValues } from "./form-fields/defaultValues";
-import FormFields from "./form-fields/FormFields";
+import { formDefaultValues } from "./utils/defaultValues";
+import FormFields from "./components/FormFields";
 import type { FormValues } from "./types/types";
 
 function App() {
