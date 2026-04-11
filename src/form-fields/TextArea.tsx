@@ -1,19 +1,22 @@
-import { contactFormValidators } from "../utils/validation";
-import InputField from "./input-field";
-import type { ContactFormApi } from "./types";
+import { formFieldValidators } from "../utils/validators";
+import FieldLayout from "./FieldLayout";
+import type { FormApi, FormFieldName } from "./types";
 
-type MessageFieldProps = {
-  form: ContactFormApi;
+type TextAreaProps = {
+  form: FormApi;
+  label: string;
+  name: FormFieldName;
+  placeholder?: string;
 };
 
-function MessageField({ form }: MessageFieldProps) {
+function TextArea({ form, label, name, placeholder }: TextAreaProps) {
   return (
-    <form.Field name="message" validators={contactFormValidators.message}>
+    <form.Field name={name} validators={formFieldValidators[name]}>
       {(field) => (
-        <InputField
+        <FieldLayout
           error={field.state.meta.errors[0]}
           isTouched={field.state.meta.isTouched}
-          label="Message"
+          label={label}
         >
           <textarea
             className="min-h-32 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400"
@@ -21,12 +24,12 @@ function MessageField({ form }: MessageFieldProps) {
             value={field.state.value}
             onBlur={field.handleBlur}
             onChange={(event) => field.handleChange(event.target.value)}
-            placeholder="Tell us what you want to build with TanStack Form."
+            placeholder={placeholder}
           />
-        </InputField>
+        </FieldLayout>
       )}
     </form.Field>
   );
 }
 
-export default MessageField;
+export default TextArea;

@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import EmailField from "./form-fields/email-field";
-import FullNameField from "./form-fields/full-name-field";
-import MessageField from "./form-fields/message-field";
-import {
-  contactFormDefaultValues,
-  type ContactFormData,
-} from "./utils/validation";
+import { formDefaultValues } from "./form-fields/defaultValues";
+import FormFields from "./form-fields/FormFields";
+import type { FormValues } from "./form-fields/types";
 
 function App() {
-  const [submittedValue, setSubmittedValue] = useState<ContactFormData | null>(
-    null,
-  );
+  const [submittedValue, setSubmittedValue] = useState<FormValues | null>(null);
 
   const form = useForm({
-    defaultValues: contactFormDefaultValues,
+    defaultValues: formDefaultValues,
     onSubmit: async ({ value }) => {
       setSubmittedValue(value);
     },
@@ -33,9 +27,7 @@ function App() {
                 void form.handleSubmit();
               }}
             >
-              <FullNameField form={form} />
-              <EmailField form={form} />
-              <MessageField form={form} />
+              <FormFields form={form} />
 
               <div className="flex flex-wrap items-center gap-3">
                 <form.Subscribe

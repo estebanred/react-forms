@@ -1,16 +1,10 @@
-export type ContactFormData = {
-  fullName: string;
-  email: string;
-  message: string;
+import type { FormFieldName } from "../form-fields/types";
+
+type FormFieldValidator = {
+  onChange: ({ value }: { value: string }) => string | undefined;
 };
 
-export const contactFormDefaultValues = {
-  fullName: "",
-  email: "",
-  message: "",
-} satisfies ContactFormData;
-
-export const contactFormValidators = {
+export const formFieldValidators: Record<FormFieldName, FormFieldValidator> = {
   fullName: {
     onChange: ({ value }: { value: string }) =>
       value.trim().length < 2 ? "Enter at least 2 characters." : undefined,
@@ -27,4 +21,4 @@ export const contactFormValidators = {
         ? "Add a short message with at least 10 characters."
         : undefined,
   },
-} as const;
+};

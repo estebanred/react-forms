@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 
-type InputFieldProps = {
+type FieldLayoutProps = {
   children: ReactNode;
   error?: string;
   isTouched: boolean;
   label: string;
 };
 
-function InputField({ children, error, isTouched, label }: InputFieldProps) {
+function FieldLayout({ children, error, isTouched, label }: FieldLayoutProps) {
   return (
     <label className="block space-y-2">
       <span className="text-sm font-medium text-stone-200">{label}</span>
@@ -19,4 +19,4 @@ function InputField({ children, error, isTouched, label }: InputFieldProps) {
   );
 }
 
-export default InputField;
+export default FieldLayout;

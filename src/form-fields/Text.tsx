@@ -1,33 +1,35 @@
-import { contactFormValidators } from "../utils/validation";
-import InputField from "./input-field";
-import type { ContactFormApi } from "./types";
+import { formFieldValidators } from "../utils/validators";
+import FieldLayout from "./FieldLayout";
+import type { FormApi, FormFieldName } from "./types";
 
-type EmailFieldProps = {
-  form: ContactFormApi;
+type TextProps = {
+  form: FormApi;
+  label: string;
+  name: FormFieldName;
+  placeholder?: string;
 };
 
-function EmailField({ form }: EmailFieldProps) {
+function Text({ form, label, name, placeholder }: TextProps) {
   return (
-    <form.Field name="email" validators={contactFormValidators.email}>
+    <form.Field name={name} validators={formFieldValidators[name]}>
       {(field) => (
-        <InputField
+        <FieldLayout
           error={field.state.meta.errors[0]}
           isTouched={field.state.meta.isTouched}
-          label="Email"
+          label={label}
         >
           <input
             className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400"
             name={field.name}
-            type="email"
             value={field.state.value}
             onBlur={field.handleBlur}
             onChange={(event) => field.handleChange(event.target.value)}
-            placeholder="ada@analytical.engine"
+            placeholder={placeholder}
           />
-        </InputField>
+        </FieldLayout>
       )}
     </form.Field>
   );
 }
 
-export default EmailField;
+export default Text;
