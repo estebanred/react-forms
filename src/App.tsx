@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { formDefaultValues } from "./form-fields/defaultValues";
 import FormFields from "./form-fields/FormFields";
-import type { FormValues } from "./form-fields/types";
+import type { FormValues } from "./types/types";
 
 function App() {
   const [submittedValue, setSubmittedValue] = useState<FormValues | null>(null);

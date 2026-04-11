@@ -1,4 +1,4 @@
-import type { FormFieldName } from "../form-fields/types";
+import type { FormFieldName } from "../types/types";
 
 type FormFieldValidator = {
   onChange: ({ value }: { value: string }) => string | undefined;

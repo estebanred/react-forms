@@ -13,7 +13,7 @@ function FieldLayout({ children, error, isTouched, label }: FieldLayoutProps) {
       <span className="text-sm font-medium text-stone-200">{label}</span>
       {children}
       {isTouched && error ? (
-        <p className="text-sm text-rose-300">{error}</p>
+        <p className="text-sm text-red-300">{error}</p>
       ) : null}
     </label>
   );

@@ -1,4 +1,4 @@
-import type { FormValues } from "./types";
+import type { FormValues } from "../types/types";
 
 export const formDefaultValues = {
   fullName: "",
