@@ -7,28 +7,42 @@ export type FormValues = {
 
 export type FormFieldName = keyof FormValues;
 
+type BaseField = {
+  name: FormFieldName;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+};
+
+type OptionsField = BaseField & {
+  options: Array<{ label: string; value: string }>;
+};
+
+// Lead database field types
 export type FormField =
-  | {
-      type: "Text";
-      name: FormFieldName;
-      label: string;
-      placeholder?: string;
-      required?: boolean;
-    }
-  | {
-      type: "Email";
-      name: FormFieldName;
-      label: string;
-      placeholder?: string;
-      required?: boolean;
-    }
-  | {
-      type: "TextArea";
-      name: FormFieldName;
-      label: string;
-      placeholder?: string;
-      required?: boolean;
-    };
+  | (BaseField & { type: "Text" })
+  | (BaseField & { type: "TextArea" })
+  | (BaseField & { type: "Email" })
+  | (BaseField & { type: "Phone" })
+  | (BaseField & { type: "URL" })
+  | (BaseField & { type: "Integer" })
+  | (BaseField & { type: "Float" })
+  | (BaseField & { type: "Currency" })
+  | (BaseField & { type: "Percent" })
+  | (BaseField & { type: "Score" })
+  | (BaseField & { type: "Date" })
+  | (BaseField & { type: "DateTime" })
+  | (BaseField & { type: "Boolean" })
+  | (BaseField & { type: "Formula" })
+  | (BaseField & { type: "Reference" })
+  // Form-specific field types
+  | (OptionsField & { type: "Select" })
+  | (OptionsField & { type: "Checkbox" })
+  | (OptionsField & { type: "Radio" })
+  | (BaseField & { type: "SingleCheckbox" })
+  | (BaseField & { type: "Range"; min?: number; max?: number })
+  | (BaseField & { type: "HtmlText" })
+  | (BaseField & { type: "Hidden" });
 
 export const formFields = [
   {
