@@ -13,18 +13,21 @@ export type FormField =
       name: FormFieldName;
       label: string;
       placeholder?: string;
+      required?: boolean;
     }
   | {
       type: "Email";
       name: FormFieldName;
       label: string;
       placeholder?: string;
+      required?: boolean;
     }
   | {
       type: "TextArea";
       name: FormFieldName;
       label: string;
       placeholder?: string;
+      required?: boolean;
     };
 
 export const formFields = [
@@ -33,6 +36,14 @@ export const formFields = [
     name: "firstName",
     label: "First name",
     placeholder: "First name",
+    required: true,
+  },
+  {
+    type: "Text",
+    name: "lastName",
+    label: "Last name",
+    placeholder: "Last name",
+    required: true,
   },
   {
     type: "Email",
@@ -45,11 +56,5 @@ export const formFields = [
     name: "message",
     label: "Message",
     placeholder: "Tell us what you want to build with TanStack Form.",
-  },
-  {
-    type: "Text",
-    name: "lastName",
-    label: "Last name",
-    placeholder: "Last name",
   },
 ] satisfies FormField[];

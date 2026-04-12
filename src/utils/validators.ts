@@ -5,12 +5,6 @@ type FormFieldValidator = {
   onChange: ({ value }: { value: string }) => string | undefined;
 };
 
-const formFieldSchemas = {
-  Text: z.string().trim(),
-  Email: z.email("Enter a valid email address."),
-  TextArea: z.string().trim(),
-} satisfies Record<FormField["type"], z.ZodType<string, string>>;
-
 const validateWithSchema =
   (schema: z.ZodType<string, string>) =>
   ({ value }: { value: string }) => {
@@ -19,17 +13,22 @@ const validateWithSchema =
     return result.success ? undefined : result.error.issues[0]?.message;
   };
 
-export const formFieldValidators: Record<
-  FormField["type"],
-  FormFieldValidator
-> = {
-  Text: {
-    onChange: validateWithSchema(formFieldSchemas.Text),
-  },
-  Email: {
-    onChange: validateWithSchema(formFieldSchemas.Email),
-  },
-  TextArea: {
-    onChange: validateWithSchema(formFieldSchemas.TextArea),
-  },
-};
+function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<string, string> {
+  const required = field.required ?? false;
+
+  switch (field.type) {
+    case "Text":
+    case "TextArea": {
+      const base = z.string().trim();
+      return required ? base.min(1, "This field is required") : base;
+    }
+    case "Email": {
+      const base = z.string().min(1, "This field is required").email("Enter a valid email address.");
+      return required ? base : z.string().email("Enter a valid email address.");
+    }
+  }
+}
+
+export function getFieldValidator(field: Pick<FormField, "type" | "required">): FormFieldValidator {
+  return { onChange: validateWithSchema(buildSchema(field)) };
+}

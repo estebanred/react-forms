@@ -1,4 +1,4 @@
-import { formFieldValidators } from "../../utils/validators";
+import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
 import type { FormApi } from "../../types/types";
@@ -8,12 +8,13 @@ type EmailProps = {
   label: string;
   name: FormField["name"];
   placeholder?: string;
+  required?: boolean;
   type: Extract<FormField, { type: "Email" }>["type"];
 };
 
-function Email({ form, label, name, placeholder, type }: EmailProps) {
+function Email({ form, label, name, placeholder, required, type }: EmailProps) {
   return (
-    <form.Field name={name} validators={formFieldValidators[type]}>
+    <form.Field name={name} validators={getFieldValidator({ type, required })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}
