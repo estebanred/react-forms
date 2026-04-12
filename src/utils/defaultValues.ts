@@ -1,4 +1,4 @@
-import type { FormValues } from "../types/types";
+import type { FormValues } from "../types/FormData";
 
 export const formDefaultValues = {
   firstName: "",

@@ -1,34 +1,8 @@
 import Email from "./field-types/Email";
 import Text from "./field-types/Text";
 import TextArea from "./field-types/TextArea";
-import type { FormApi, FormField } from "../types/types";
-
-const formFields = [
-  {
-    type: "Text",
-    name: "firstName",
-    label: "First name",
-    placeholder: "Ada Lovelace",
-  },
-  {
-    type: "Email",
-    name: "email",
-    label: "Email",
-    placeholder: "ada@analytical.engine",
-  },
-  {
-    type: "TextArea",
-    name: "message",
-    label: "Message",
-    placeholder: "Tell us what you want to build with TanStack Form.",
-  },
-  {
-    type: "Text",
-    name: "lastName",
-    label: "Last name",
-    placeholder: "Lovelace",
-  },
-] satisfies FormField[];
+import { formFields } from "../types/FormData";
+import type { FormApi } from "../types/types";
 
 type FormFieldsProps = {
   form: FormApi;

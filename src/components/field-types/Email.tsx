@@ -1,6 +1,7 @@
 import { formFieldValidators } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
-import type { FormApi, FormField } from "../../types/types";
+import type { FormField } from "../../types/FormData";
+import type { FormApi } from "../../types/types";
 
 type EmailProps = {
   form: FormApi;
