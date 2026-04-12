@@ -6,8 +6,8 @@ import type { FormApi, FormField } from "../types/types";
 const formFields = [
   {
     type: "Text",
-    name: "fullName",
-    label: "Full name",
+    name: "firstName",
+    label: "First name",
     placeholder: "Ada Lovelace",
   },
   {
@@ -21,6 +21,12 @@ const formFields = [
     name: "message",
     label: "Message",
     placeholder: "Tell us what you want to build with TanStack Form.",
+  },
+  {
+    type: "Text",
+    name: "lastName",
+    label: "Last name",
+    placeholder: "Lovelace",
   },
 ] satisfies FormField[];
 

@@ -1,17 +1,18 @@
 import { formFieldValidators } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
-import type { FormApi, FormFieldName } from "../../types/types";
+import type { FormApi, FormField } from "../../types/types";
 
 type TextAreaProps = {
   form: FormApi;
   label: string;
-  name: FormFieldName;
+  name: FormField["name"];
   placeholder?: string;
+  type: Extract<FormField, { type: "TextArea" }>["type"];
 };
 
-function TextArea({ form, label, name, placeholder }: TextAreaProps) {
+function TextArea({ form, label, name, placeholder, type }: TextAreaProps) {
   return (
-    <form.Field name={name} validators={formFieldValidators[name]}>
+    <form.Field name={name} validators={formFieldValidators[type]}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

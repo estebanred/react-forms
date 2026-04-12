@@ -20,7 +20,7 @@ function App() {
         <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <section className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur sm:p-10">
             <form
-              className="mt-10 space-y-6"
+              className="space-y-6"
               onSubmit={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
