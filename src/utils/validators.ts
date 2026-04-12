@@ -1,27 +1,35 @@
+import { z } from "zod";
 import type { FormField } from "../types/FormData";
 
 type FormFieldValidator = {
   onChange: ({ value }: { value: string }) => string | undefined;
 };
 
+const formFieldSchemas = {
+  Text: z.string().trim(),
+  Email: z.email("Enter a valid email address."),
+  TextArea: z.string().trim(),
+} satisfies Record<FormField["type"], z.ZodType<string, string>>;
+
+const validateWithSchema =
+  (schema: z.ZodType<string, string>) =>
+  ({ value }: { value: string }) => {
+    const result = schema.safeParse(value);
+
+    return result.success ? undefined : result.error.issues[0]?.message;
+  };
+
 export const formFieldValidators: Record<
   FormField["type"],
   FormFieldValidator
 > = {
   Text: {
-    onChange: ({ value }: { value: string }) =>
-      value.trim().length < 2 ? "Enter at least 2 characters." : undefined,
+    onChange: validateWithSchema(formFieldSchemas.Text),
   },
   Email: {
-    onChange: ({ value }: { value: string }) =>
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        ? undefined
-        : "Enter a valid email address.",
+    onChange: validateWithSchema(formFieldSchemas.Email),
   },
   TextArea: {
-    onChange: ({ value }: { value: string }) =>
-      value.trim().length < 10
-        ? "Add a short message with at least 10 characters."
-        : undefined,
+    onChange: validateWithSchema(formFieldSchemas.TextArea),
   },
 };
