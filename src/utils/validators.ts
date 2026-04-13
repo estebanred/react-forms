@@ -33,7 +33,9 @@ function isISODateTime(v: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<any, any, any> {
+function buildSchema(
+  field: Pick<FormField, "type" | "required">,
+): z.ZodType<any, any, any> {
   const required = field.required ?? false;
 
   switch (field.type) {
@@ -47,35 +49,50 @@ function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<any
 
     case "Email": {
       return required
-        ? z.string().min(1, "This field is required").email("Enter a valid email address.")
-        : z.string().email("Enter a valid email address.");
+        ? z
+            .email("Enter a valid email address.")
+            .min(1, "This field is required")
+        : z.email("Enter a valid email address.");
     }
 
     case "Phone": {
-      const base = z.string().trim().regex(PHONE_REGEX, "Enter a valid phone number.");
+      const base = z
+        .string()
+        .trim()
+        .regex(PHONE_REGEX, "Enter a valid phone number.");
       return required
-        ? z.string().trim().min(1, "This field is required").regex(PHONE_REGEX, "Enter a valid phone number.")
+        ? z
+            .string()
+            .trim()
+            .min(1, "This field is required")
+            .regex(PHONE_REGEX, "Enter a valid phone number.")
         : base;
     }
 
     case "URL": {
       return required
-        ? z.string().trim().min(1, "This field is required").url("Enter a valid URL.")
-        : z.string().trim().url("Enter a valid URL.");
+        ? z.url("Enter a valid URL.").trim().min(1, "This field is required")
+        : z.url("Enter a valid URL.").trim();
     }
 
     // --- Numeric ---
     case "Integer":
     case "Score": {
       return required
-        ? z.string().min(1, "This field is required").refine(isInteger, "Enter a valid whole number.")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(isInteger, "Enter a valid whole number.")
         : z.string().refine(isInteger, "Enter a valid whole number.");
     }
 
     case "Float":
     case "Currency": {
       return required
-        ? z.string().min(1, "This field is required").refine(isNumeric, "Enter a valid number.")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(isNumeric, "Enter a valid number.")
         : z.string().refine(isNumeric, "Enter a valid number.");
     }
 
@@ -86,26 +103,38 @@ function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<any
         return isInteger(v) && n >= 0 && n <= 100;
       };
       return required
-        ? z.string().min(1, "This field is required").refine(inRange, "Enter a percentage between 0 and 100.")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(inRange, "Enter a percentage between 0 and 100.")
         : z.string().refine(inRange, "Enter a percentage between 0 and 100.");
     }
 
     case "Range": {
       return required
-        ? z.string().min(1, "This field is required").refine(isNumeric, "Enter a valid number.")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(isNumeric, "Enter a valid number.")
         : z.string().refine(isNumeric, "Enter a valid number.");
     }
 
     // --- Date / Time ---
     case "Date": {
       return required
-        ? z.string().min(1, "This field is required").refine(isISODate, "Enter a valid date (YYYY-MM-DD).")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(isISODate, "Enter a valid date (YYYY-MM-DD).")
         : z.string().refine(isISODate, "Enter a valid date (YYYY-MM-DD).");
     }
 
     case "DateTime": {
       return required
-        ? z.string().min(1, "This field is required").refine(isISODateTime, "Enter a valid date and time.")
+        ? z
+            .string()
+            .min(1, "This field is required")
+            .refine(isISODateTime, "Enter a valid date and time.")
         : z.string().refine(isISODateTime, "Enter a valid date and time.");
     }
 
@@ -129,7 +158,9 @@ function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<any
 
     case "Checkbox": {
       const base = z.string().trim();
-      return required ? base.min(1, "Please select at least one option.") : base;
+      return required
+        ? base.min(1, "Please select at least one option.")
+        : base;
     }
 
     // --- Read-only / Display / Hidden (no meaningful validation) ---
@@ -141,6 +172,8 @@ function buildSchema(field: Pick<FormField, "type" | "required">): z.ZodType<any
   }
 }
 
-export function getFieldValidator(field: Pick<FormField, "type" | "required">): FormFieldValidator {
+export function getFieldValidator(
+  field: Pick<FormField, "type" | "required">,
+): FormFieldValidator {
   return { onChange: validateWithSchema(buildSchema(field)) };
 }
