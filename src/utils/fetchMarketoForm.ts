@@ -1,4 +1,8 @@
-import type { FormField } from "../types/FormData";
+import type {
+  FormField,
+  FormFieldOption,
+  VisibilityRule,
+} from "../types/FormData";
 
 type MarketoDatatype =
   | "string"
@@ -26,6 +30,20 @@ type MarketoPicklistValue = {
   isDefault?: boolean;
 };
 
+type MarketoVisibilityRuleItem = {
+  subjectField: string;
+  fieldLabel?: string;
+  operator: string;
+  values?: string[];
+  altLabel?: string | null;
+  picklistFilterValues?: MarketoPicklistValue[];
+};
+
+type MarketoVisibilityRule = {
+  defaultVisibility?: "hide" | "show";
+  rules?: MarketoVisibilityRuleItem[];
+};
+
 type MarketoField = {
   Id: number;
   Name: string;
@@ -36,22 +54,50 @@ type MarketoField = {
   PicklistValues?: MarketoPicklistValue[];
   Htmltext?: string;
   ValidationMessage?: string;
+  VisibilityRule?: MarketoVisibilityRule;
 };
 
 type MarketoFormResponse = {
   rows: MarketoField[][];
 };
 
+function mapOptions(values: MarketoPicklistValue[] = []): FormFieldOption[] {
+  return values
+    .filter((v) => v.value !== "")
+    .map(({ label, value }) => ({ label, value }));
+}
+
+function mapVisibilityRule(
+  visibilityRule?: MarketoVisibilityRule,
+): VisibilityRule | undefined {
+  if (!visibilityRule?.rules?.length) {
+    return undefined;
+  }
+
+  return {
+    defaultVisibility:
+      visibilityRule.defaultVisibility === "show" ? "show" : "hide",
+    rules: visibilityRule.rules.map((rule) => ({
+      subjectField: rule.subjectField,
+      fieldLabel: rule.fieldLabel,
+      operator: rule.operator,
+      values: rule.values ?? [],
+      altLabel: rule.altLabel,
+      picklistFilterValues: mapOptions(rule.picklistFilterValues),
+    })),
+  };
+}
+
 function mapField(field: MarketoField): FormField | null {
   const base = {
     name: field.Name,
     label: field.InputLabel ?? "",
+    placeholder: field.Htmltext,
     required: field.IsRequired ?? false,
+    visibilityRule: mapVisibilityRule(field.VisibilityRule),
   };
 
-  const options = (field.PicklistValues ?? [])
-    .filter((v) => v.value !== "")
-    .map(({ label, value }) => ({ label, value }));
+  const options = mapOptions(field.PicklistValues);
 
   switch (field.Datatype) {
     case "string":
@@ -85,7 +131,7 @@ function mapField(field: MarketoField): FormField | null {
     case "checkbox":
       return options.length > 1
         ? { ...base, type: "Checkbox", options }
-        : { ...base, type: "SingleCheckbox" };
+        : { ...base, type: "SingleCheckbox", option: options[0] };
     case "htmltext":
       return { ...base, type: "HtmlText" };
     case "hidden":

@@ -5,9 +5,8 @@ type FormFieldValidator = {
   onChange: ({ value }: { value: string }) => string | undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateWithSchema =
-  (schema: z.ZodType<any, any, any>) =>
+  (schema: z.ZodType<string, string>) =>
   ({ value }: { value: string }) => {
     const result = schema.safeParse(value);
 
@@ -32,10 +31,9 @@ function isISODateTime(v: string) {
   return v.trim() === "" || !isNaN(Date.parse(v.trim()));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildSchema(
   field: Pick<FormField, "type" | "required">,
-): z.ZodType<any, any, any> {
+): z.ZodType<string, string> {
   const required = field.required ?? false;
 
   switch (field.type) {
@@ -144,7 +142,7 @@ function buildSchema(
 
     case "SingleCheckbox": {
       return required
-        ? z.literal("true", { error: "This field is required." })
+        ? z.string().min(1, "This field is required.")
         : z.string();
     }
 

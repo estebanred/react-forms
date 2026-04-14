@@ -1,5 +1,11 @@
+import { useEffect, useMemo } from "react";
+import { useStore } from "@tanstack/react-form";
 import type { FormField } from "../types/FormData";
 import type { FormApi } from "../types/types";
+import {
+  hasOptionValue,
+  resolveFieldVisibility,
+} from "../utils/visibilityRules";
 import Text from "./field-types/Text";
 import TextArea from "./field-types/TextArea";
 import Email from "./field-types/Email";
@@ -27,7 +33,25 @@ type FormFieldsProps = {
 };
 
 function FormFields({ form, fields }: FormFieldsProps) {
-  return fields.map((field) => {
+  const values = useStore(form.store, (state) => state.values);
+  const resolvedFields = useMemo(
+    () => fields.map((field) => resolveFieldVisibility(field, values)),
+    [fields, values],
+  );
+
+  useEffect(() => {
+    resolvedFields.forEach(({ field, isVisible }) => {
+      const value = values[field.name] ?? "";
+
+      if (value && (!isVisible || !hasOptionValue(field, value))) {
+        form.setFieldValue(field.name, "");
+      }
+    });
+  }, [form, resolvedFields, values]);
+
+  return resolvedFields.map(({ field, isVisible }) => {
+    if (!isVisible) return null;
+
     switch (field.type) {
       case "Text":
         return <Text key={field.name} form={form} {...field} />;

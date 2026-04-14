@@ -10,7 +10,9 @@ type FieldLayoutProps = {
 function FieldLayout({ children, error, isTouched, label }: FieldLayoutProps) {
   return (
     <label className="block space-y-2">
-      <span className="text-sm font-medium text-stone-200">{label}</span>
+      {label ? (
+        <span className="text-sm font-medium text-stone-200">{label}</span>
+      ) : null}
       {children}
       {isTouched && error ? (
         <p className="text-sm text-red-300">{error}</p>

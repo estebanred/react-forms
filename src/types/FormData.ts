@@ -1,14 +1,34 @@
 export type FormValues = Record<string, string>;
 
+export type FormFieldOption = {
+  label: string;
+  value: string;
+};
+
+export type VisibilityRuleItem = {
+  subjectField: string;
+  fieldLabel?: string;
+  operator: string;
+  values: string[];
+  altLabel?: string | null;
+  picklistFilterValues?: FormFieldOption[];
+};
+
+export type VisibilityRule = {
+  defaultVisibility: "hide" | "show";
+  rules: VisibilityRuleItem[];
+};
+
 type BaseField = {
   name: string;
   label: string;
   placeholder?: string;
   required?: boolean;
+  visibilityRule?: VisibilityRule;
 };
 
 type OptionsField = BaseField & {
-  options: Array<{ label: string; value: string }>;
+  options: FormFieldOption[];
 };
 
 // Lead database field types
@@ -30,7 +50,7 @@ export type FormField =
   | (OptionsField & { type: "Select" })
   | (OptionsField & { type: "Checkbox" })
   | (OptionsField & { type: "Radio" })
-  | (BaseField & { type: "SingleCheckbox" })
+  | (BaseField & { type: "SingleCheckbox"; option?: FormFieldOption })
   | (BaseField & { type: "Range"; min?: number; max?: number })
   | (BaseField & { type: "HtmlText" })
   | (BaseField & { type: "Hidden" });
