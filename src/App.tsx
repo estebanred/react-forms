@@ -7,9 +7,9 @@ import FormFields from "./components/FormFields";
 import type { FormValues } from "./types/FormData";
 
 // ── Marketo form config ──────────────────────────────────────────────────────
-const MARKETO_BASE_URL = "";
-const MUNCHKIN_ID = "";
-const FORM_ID = 0;
+const MARKETO_BASE_URL = import.meta.env.VITE_MARKETO_BASE_URL;
+const MUNCHKIN_ID = import.meta.env.VITE_MUNCHKIN_ID;
+const FORM_ID = import.meta.env.VITE_FORM_ID;
 
 // ────────────────────────────────────────────────────────────────────────────
 
