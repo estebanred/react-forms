@@ -107,10 +107,14 @@ export async function fetchMarketoForm(
 ): Promise<MarketoFormData> {
   const url = `${baseUrl}/index.php/form/getForm?munchkinId=${munchkinId}&form=${formId}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch Marketo form ${formId}: ${res.statusText}`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch Marketo form ${formId}: ${res.statusText}`,
+    );
 
   const data = (await res.json()) as MarketoFormResponse;
 
+  console.log(data);
   const fields = data.rows
     .map((row) => row[0])
     .filter(Boolean)
