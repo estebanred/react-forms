@@ -68,7 +68,7 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
           </form>
         </section>
 
-        <aside className="space-y-6 rounded-3xl border border-white/10 bg-linear-to-br from-cyan-500/10 via-transparent to-fuchsia-500/10 p-8 sm:p-10">
+        <aside className="space-y-6 rounded-3xl max-w-100 border border-white/10 bg-linear-to-br from-cyan-500/10 via-transparent to-fuchsia-500/10 p-8 sm:p-10">
           <div>
             <h2 className="text-lg font-semibold text-white">
               Live form state

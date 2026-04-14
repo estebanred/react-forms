@@ -20,19 +20,82 @@ function normalize(value: unknown) {
   return String(value ?? "").trim();
 }
 
-function matchesRule(rule: VisibilityRuleItem, values: FormValues) {
+function optionMatchesValue(option: FormFieldOption, value: string) {
+  const normalizedValue = normalize(value);
+  return (
+    normalize(option.value) === normalizedValue ||
+    normalize(option.label) === normalizedValue
+  );
+}
+
+function getOptionComparableValues(field: FormField | undefined, value: string) {
+  if (!field || !value) return [];
+
+  if (isOptionsField(field)) {
+    const selectedValues =
+      field.type === "Checkbox" ? value.split(",").filter(Boolean) : [value];
+
+    return selectedValues.flatMap((selectedValue) =>
+      field.options
+        .filter((option) => optionMatchesValue(option, selectedValue))
+        .flatMap((option) => [option.value, option.label]),
+    );
+  }
+
+  if (field.type === "SingleCheckbox" && field.option) {
+    const optionValue = field.option.value ?? "true";
+    return optionMatchesValue({ ...field.option, value: optionValue }, value)
+      ? [optionValue, field.option.label]
+      : [];
+  }
+
+  return [];
+}
+
+function getComparableValues(
+  rule: VisibilityRuleItem,
+  values: FormValues,
+  fields: FormField[] = [],
+) {
   const value = normalize(values[rule.subjectField]);
+  const subjectField = fields.find((field) => field.name === rule.subjectField);
+  const optionValues = getOptionComparableValues(subjectField, value).map(
+    normalize,
+  );
+
+  return Array.from(new Set([value, ...optionValues]));
+}
+
+function matchesRule(
+  rule: VisibilityRuleItem,
+  values: FormValues,
+  fields?: FormField[],
+) {
+  const value = normalize(values[rule.subjectField]);
+  const comparableValues = getComparableValues(rule, values, fields);
   const ruleValues = rule.values.map(normalize);
 
   switch (rule.operator) {
     case "equal":
-      return ruleValues.includes(value);
+      return ruleValues.some((ruleValue) =>
+        comparableValues.includes(ruleValue),
+      );
     case "notEqual":
-      return !ruleValues.includes(value);
+      return ruleValues.every(
+        (ruleValue) => !comparableValues.includes(ruleValue),
+      );
     case "contains":
-      return ruleValues.some((ruleValue) => value.includes(ruleValue));
+      return ruleValues.some((ruleValue) =>
+        comparableValues.some((comparableValue) =>
+          comparableValue.includes(ruleValue),
+        ),
+      );
     case "notContains":
-      return ruleValues.every((ruleValue) => !value.includes(ruleValue));
+      return ruleValues.every((ruleValue) =>
+        comparableValues.every(
+          (comparableValue) => !comparableValue.includes(ruleValue),
+        ),
+      );
     case "isEmpty":
       return value === "";
     case "isNotEmpty":
@@ -42,8 +105,14 @@ function matchesRule(rule: VisibilityRuleItem, values: FormValues) {
   }
 }
 
-function getMatchingRule(field: FormField, values: FormValues) {
-  return field.visibilityRule?.rules.find((rule) => matchesRule(rule, values));
+function getMatchingRule(
+  field: FormField,
+  values: FormValues,
+  fields?: FormField[],
+) {
+  return field.visibilityRule?.rules.find((rule) =>
+    matchesRule(rule, values, fields),
+  );
 }
 
 function applyRuleData(field: FormField, rule: VisibilityRuleItem): FormField {
@@ -69,12 +138,13 @@ function applyRuleData(field: FormField, rule: VisibilityRuleItem): FormField {
 export function resolveFieldVisibility(
   field: FormField,
   values: FormValues,
+  fields?: FormField[],
 ): ResolvedField {
   if (!field.visibilityRule) {
     return { field, isVisible: true };
   }
 
-  const matchingRule = getMatchingRule(field, values);
+  const matchingRule = getMatchingRule(field, values, fields);
   const isVisibleByDefault = field.visibilityRule.defaultVisibility === "show";
   const isVisible = matchingRule ? !isVisibleByDefault : isVisibleByDefault;
 
@@ -91,15 +161,22 @@ export function hasOptionValue(field: FormField, value: string) {
     if (field.type === "Checkbox") {
       const selectedValues = value.split(",").filter(Boolean);
       return selectedValues.every((selectedValue) =>
-        field.options.some((option) => option.value === selectedValue),
+        field.options.some((option) =>
+          optionMatchesValue(option, selectedValue),
+        ),
       );
     }
 
-    return field.options.some((option) => option.value === value);
+    return field.options.some((option) => optionMatchesValue(option, value));
   }
 
   if (field.type === "SingleCheckbox") {
-    return value === (field.option?.value ?? "true");
+    if (!field.option) return normalize(value) === "true";
+
+    return optionMatchesValue(
+      { ...field.option, value: field.option.value ?? "true" },
+      value,
+    );
   }
 
   return true;

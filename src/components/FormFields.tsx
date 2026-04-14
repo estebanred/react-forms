@@ -35,7 +35,7 @@ type FormFieldsProps = {
 function FormFields({ form, fields }: FormFieldsProps) {
   const values = useStore(form.store, (state) => state.values);
   const resolvedFields = useMemo(
-    () => fields.map((field) => resolveFieldVisibility(field, values)),
+    () => fields.map((field) => resolveFieldVisibility(field, values, fields)),
     [fields, values],
   );
 
