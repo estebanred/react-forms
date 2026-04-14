@@ -41,8 +41,7 @@ function buildSchema(
   switch (field.type) {
     // --- Text-based ---
     case "Text":
-    case "TextArea":
-    case "Reference": {
+    case "TextArea": {
       const base = z.string().trim();
       return required ? base.min(1, "This field is required") : base;
     }
@@ -163,8 +162,7 @@ function buildSchema(
         : base;
     }
 
-    // --- Read-only / Display / Hidden (no meaningful validation) ---
-    case "Formula":
+    // --- Display / Hidden (no meaningful validation) ---
     case "HtmlText":
     case "Hidden": {
       return z.string();

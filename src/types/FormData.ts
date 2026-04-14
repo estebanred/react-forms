@@ -33,8 +33,6 @@ export type FormField =
   | (BaseField & { type: "Date" })
   | (BaseField & { type: "DateTime" })
   | (BaseField & { type: "Boolean" })
-  | (BaseField & { type: "Formula" })
-  | (BaseField & { type: "Reference" })
   // Form-specific field types
   | (OptionsField & { type: "Select" })
   | (OptionsField & { type: "Checkbox" })
