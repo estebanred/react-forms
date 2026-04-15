@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import type { FormField } from "../../types/FormData";
 import type { FormApi } from "../../types/types";
@@ -23,4 +24,4 @@ function Hidden({ form, name, type }: HiddenProps) {
   );
 }
 
-export default Hidden;
+export default memo(Hidden);

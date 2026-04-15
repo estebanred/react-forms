@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -34,4 +35,4 @@ function Date({ form, label, name, required, type }: DateProps) {
   );
 }
 
-export default Date;
+export default memo(Date);

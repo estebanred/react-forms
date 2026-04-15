@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -43,4 +44,4 @@ function Radio({ form, label, name, options, required, type }: RadioProps) {
   );
 }
 
-export default Radio;
+export default memo(Radio);

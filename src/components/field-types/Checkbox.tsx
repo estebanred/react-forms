@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -54,4 +55,4 @@ function Checkbox({ form, label, name, options, required, type }: CheckboxProps)
   );
 }
 
-export default Checkbox;
+export default memo(Checkbox);

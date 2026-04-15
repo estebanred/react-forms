@@ -33,21 +33,46 @@ type FormFieldsProps = {
 };
 
 function FormFields({ form, fields }: FormFieldsProps) {
-  const values = useStore(form.store, (state) => state.values);
+  // Collect only the field names that drive visibility rules.
+  const subjectFieldNames = useMemo(
+    () => [
+      ...new Set(
+        fields.flatMap(
+          (f) => f.visibilityRule?.rules.map((r) => r.subjectField) ?? [],
+        ),
+      ),
+    ],
+    [fields],
+  );
+
+  // Subscribe to a primitive string fingerprint of the visibility-controlling
+  // values only. FormFields re-renders solely when one of those values changes,
+  // not on every keystroke in unrelated fields.
+  const visibilitySignature = useStore(form.store, (state) =>
+    subjectFieldNames
+      .map((name) => String(state.values[name] ?? ""))
+      .join("\x00"),
+  );
+
   const resolvedFields = useMemo(
-    () => fields.map((field) => resolveFieldVisibility(field, values, fields)),
-    [fields, values],
+    () => {
+      const values = form.store.state.values;
+      return fields.map((field) => resolveFieldVisibility(field, values, fields));
+    },
+    // visibilitySignature changes whenever a visibility-controlling value changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fields, visibilitySignature],
   );
 
   useEffect(() => {
+    const values = form.store.state.values;
     resolvedFields.forEach(({ field, isVisible }) => {
       const value = values[field.name] ?? "";
-
       if (value && (!isVisible || !hasOptionValue(field, value))) {
         form.setFieldValue(field.name, "");
       }
     });
-  }, [form, resolvedFields, values]);
+  }, [form, resolvedFields]);
 
   return resolvedFields.map(({ field, isVisible }) => {
     if (!isVisible) return null;

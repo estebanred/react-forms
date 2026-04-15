@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -37,4 +38,4 @@ function Boolean({ form, label, name, required, type }: BooleanProps) {
   );
 }
 
-export default Boolean;
+export default memo(Boolean);

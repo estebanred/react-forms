@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -37,4 +38,4 @@ function Float({ form, label, name, placeholder, required, type }: FloatProps) {
   );
 }
 
-export default Float;
+export default memo(Float);

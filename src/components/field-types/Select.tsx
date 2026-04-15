@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -41,4 +42,4 @@ function Select({ form, label, name, options, required, type }: SelectProps) {
   );
 }
 
-export default Select;
+export default memo(Select);
