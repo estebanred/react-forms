@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import type { FormField } from "../../types/FormData";
 import type { FormApi } from "../../types/types";
@@ -23,4 +24,4 @@ function HtmlText({ form, label, name, placeholder, type }: HtmlTextProps) {
   );
 }
 
-export default HtmlText;
+export default memo(HtmlText);

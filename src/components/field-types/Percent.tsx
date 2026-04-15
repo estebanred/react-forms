@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -39,4 +40,4 @@ function Percent({ form, label, name, placeholder, required, type }: PercentProp
   );
 }
 
-export default Percent;
+export default memo(Percent);

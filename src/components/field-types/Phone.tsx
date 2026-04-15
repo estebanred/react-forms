@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -36,4 +37,4 @@ function Phone({ form, label, name, placeholder, required, type }: PhoneProps) {
   );
 }
 
-export default Phone;
+export default memo(Phone);

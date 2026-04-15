@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -34,4 +35,4 @@ function DateTime({ form, label, name, required, type }: DateTimeProps) {
   );
 }
 
-export default DateTime;
+export default memo(DateTime);

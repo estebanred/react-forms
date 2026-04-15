@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getFieldValidator } from "../../utils/validators";
 import FieldLayout from "../FieldLayout";
 import type { FormField } from "../../types/FormData";
@@ -36,4 +37,4 @@ function URL({ form, label, name, placeholder, required, type }: URLProps) {
   );
 }
 
-export default URL;
+export default memo(URL);
