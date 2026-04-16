@@ -10,12 +10,13 @@ type CurrencyProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Currency" }>["type"];
 };
 
-function Currency({ form, label, name, placeholder, required, type }: CurrencyProps) {
+function Currency({ form, label, name, placeholder, required, validationMessage, type }: CurrencyProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

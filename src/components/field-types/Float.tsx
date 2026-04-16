@@ -10,12 +10,13 @@ type FloatProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Float" }>["type"];
 };
 
-function Float({ form, label, name, placeholder, required, type }: FloatProps) {
+function Float({ form, label, name, placeholder, required, validationMessage, type }: FloatProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

@@ -10,12 +10,13 @@ type IntegerProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Integer" }>["type"];
 };
 
-function Integer({ form, label, name, placeholder, required, type }: IntegerProps) {
+function Integer({ form, label, name, placeholder, required, validationMessage, type }: IntegerProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

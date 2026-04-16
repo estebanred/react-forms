@@ -10,12 +10,13 @@ type PercentProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Percent" }>["type"];
 };
 
-function Percent({ form, label, name, placeholder, required, type }: PercentProps) {
+function Percent({ form, label, name, placeholder, required, validationMessage, type }: PercentProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

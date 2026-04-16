@@ -10,12 +10,13 @@ type URLProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "URL" }>["type"];
 };
 
-function URL({ form, label, name, placeholder, required, type }: URLProps) {
+function URL({ form, label, name, placeholder, required, validationMessage, type }: URLProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

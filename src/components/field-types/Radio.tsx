@@ -10,12 +10,13 @@ type RadioProps = {
   name: FormField["name"];
   options: Array<{ label: string; value: string }>;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Radio" }>["type"];
 };
 
-function Radio({ form, label, name, options, required, type }: RadioProps) {
+function Radio({ form, label, name, options, required, validationMessage, type }: RadioProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

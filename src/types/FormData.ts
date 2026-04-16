@@ -24,6 +24,7 @@ type BaseField = {
   label: string;
   placeholder?: string;
   required?: boolean;
+  validationMessage?: string;
   visibilityRule?: VisibilityRule;
 };
 

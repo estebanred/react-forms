@@ -10,12 +10,13 @@ type PhoneProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Phone" }>["type"];
 };
 
-function Phone({ form, label, name, placeholder, required, type }: PhoneProps) {
+function Phone({ form, label, name, placeholder, required, validationMessage, type }: PhoneProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

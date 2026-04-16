@@ -10,6 +10,7 @@ type SingleCheckboxProps = {
   name: FormField["name"];
   option?: Extract<FormField, { type: "SingleCheckbox" }>["option"];
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "SingleCheckbox" }>["type"];
 };
 
@@ -19,13 +20,14 @@ function SingleCheckbox({
   name,
   option,
   required,
+  validationMessage,
   type,
 }: SingleCheckboxProps) {
   const checkboxLabel = option?.label ?? label;
   const checkedValue = option?.value ?? "true";
 
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

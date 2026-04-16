@@ -10,12 +10,13 @@ type TextProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Text" }>["type"];
 };
 
-function Text({ form, label, name, placeholder, required, type }: TextProps) {
+function Text({ form, label, name, placeholder, required, validationMessage, type }: TextProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}
