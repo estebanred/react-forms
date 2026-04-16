@@ -94,6 +94,7 @@ function mapField(field: MarketoField): FormField | null {
     label: field.InputLabel ?? "",
     placeholder: field.Htmltext,
     required: field.IsRequired ?? false,
+    validationMessage: field.ValidationMessage?.trim() || undefined,
     visibilityRule: mapVisibilityRule(field.VisibilityRule),
   };
 

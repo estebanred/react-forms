@@ -6,11 +6,15 @@ type FormFieldValidator = {
 };
 
 const validateWithSchema =
-  (schema: z.ZodType<string, string>) =>
+  (schema: z.ZodType<string, string>, validationMessage?: string) =>
   ({ value }: { value: string }) => {
     const result = schema.safeParse(value);
 
-    return result.success ? undefined : result.error.issues[0]?.message;
+    if (result.success) {
+      return undefined;
+    }
+
+    return validationMessage?.trim() || result.error.issues[0]?.message;
   };
 
 const PHONE_REGEX = /^\+?[\d\s\-().]{7,20}$/;
@@ -169,7 +173,9 @@ function buildSchema(
 }
 
 export function getFieldValidator(
-  field: Pick<FormField, "type" | "required">,
+  field: Pick<FormField, "type" | "required" | "validationMessage">,
 ): FormFieldValidator {
-  return { onChange: validateWithSchema(buildSchema(field)) };
+  return {
+    onChange: validateWithSchema(buildSchema(field), field.validationMessage),
+  };
 }

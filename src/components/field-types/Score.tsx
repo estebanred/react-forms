@@ -10,12 +10,13 @@ type ScoreProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Score" }>["type"];
 };
 
-function Score({ form, label, name, placeholder, required, type }: ScoreProps) {
+function Score({ form, label, name, placeholder, required, validationMessage, type }: ScoreProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

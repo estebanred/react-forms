@@ -9,12 +9,13 @@ type DateProps = {
   label: string;
   name: FormField["name"];
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Date" }>["type"];
 };
 
-function Date({ form, label, name, required, type }: DateProps) {
+function Date({ form, label, name, required, validationMessage, type }: DateProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

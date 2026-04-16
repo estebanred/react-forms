@@ -11,12 +11,13 @@ type RangeProps = {
   min?: number;
   max?: number;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Range" }>["type"];
 };
 
-function Range({ form, label, name, min, max, required, type }: RangeProps) {
+function Range({ form, label, name, min, max, required, validationMessage, type }: RangeProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

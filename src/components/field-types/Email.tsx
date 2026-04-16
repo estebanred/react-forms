@@ -10,12 +10,13 @@ type EmailProps = {
   name: FormField["name"];
   placeholder?: string;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Email" }>["type"];
 };
 
-function Email({ form, label, name, placeholder, required, type }: EmailProps) {
+function Email({ form, label, name, placeholder, required, validationMessage, type }: EmailProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}

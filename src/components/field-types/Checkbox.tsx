@@ -10,12 +10,13 @@ type CheckboxProps = {
   name: FormField["name"];
   options: Array<{ label: string; value: string }>;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Checkbox" }>["type"];
 };
 
-function Checkbox({ form, label, name, options, required, type }: CheckboxProps) {
+function Checkbox({ form, label, name, options, required, validationMessage, type }: CheckboxProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => {
         const selected = field.state.value ? field.state.value.split(",").filter(Boolean) : [];
 

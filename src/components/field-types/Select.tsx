@@ -10,12 +10,13 @@ type SelectProps = {
   name: FormField["name"];
   options: Array<{ label: string; value: string }>;
   required?: boolean;
+  validationMessage?: FormField["validationMessage"];
   type: Extract<FormField, { type: "Select" }>["type"];
 };
 
-function Select({ form, label, name, options, required, type }: SelectProps) {
+function Select({ form, label, name, options, required, validationMessage, type }: SelectProps) {
   return (
-    <form.Field name={name} validators={getFieldValidator({ type, required })}>
+    <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
       {(field) => (
         <FieldLayout
           error={field.state.meta.errors[0]}
