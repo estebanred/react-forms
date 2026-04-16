@@ -3,6 +3,7 @@ import type {
   FormFieldOption,
   VisibilityRule,
 } from "../types/FormData";
+import { resolveValidationMessageOverride } from "../config/validationMessageOverrides";
 
 type MarketoDatatype =
   | "string"
@@ -88,13 +89,19 @@ function mapVisibilityRule(
   };
 }
 
-function mapField(field: MarketoField): FormField | null {
+function mapField(field: MarketoField, formId: number): FormField | null {
+  const customValidationMessage = resolveValidationMessageOverride(
+    field.Name,
+    formId,
+  );
+  const marketoValidationMessage = field.ValidationMessage?.trim();
+
   const base = {
     name: field.Name,
     label: field.InputLabel ?? "",
     placeholder: field.Htmltext,
     required: field.IsRequired ?? false,
-    validationMessage: field.ValidationMessage?.trim() || undefined,
+    validationMessage: customValidationMessage ?? marketoValidationMessage,
     visibilityRule: mapVisibilityRule(field.VisibilityRule),
   };
 
@@ -165,7 +172,7 @@ export async function fetchMarketoForm(
   const fields = data.rows
     .map((row) => row[0])
     .filter(Boolean)
-    .map(mapField)
+    .map((field) => mapField(field, formId))
     .filter((f): f is FormField => f !== null);
 
   const defaultValues = Object.fromEntries(fields.map((f) => [f.name, ""]));
