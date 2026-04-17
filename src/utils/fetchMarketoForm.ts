@@ -197,7 +197,9 @@ export async function fetchMarketoForm(
   const defaultValues = Object.fromEntries(
     fields.map((field) => [
       field.name,
-      resolveHiddenFieldValue(rawFieldByName.get(field.name)),
+      field.type === "Hidden"
+        ? resolveHiddenFieldValue(rawFieldByName.get(field.name))
+        : "",
     ]),
   );
 
