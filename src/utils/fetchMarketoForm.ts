@@ -105,6 +105,64 @@ export type MarketoFormData = {
   defaultValues: Record<string, string>;
 };
 
+function resolveCookieValue(cookieName: string): string | undefined {
+  if (typeof document === "undefined") {
+    return undefined;
+  }
+
+  for (const cookie of document.cookie.split(";")) {
+    const [name, ...valueParts] = cookie.trim().split("=");
+    if (name !== cookieName) {
+      continue;
+    }
+
+    return decodeURIComponent(valueParts.join("="));
+  }
+
+  return undefined;
+}
+
+function resolveQueryValue(paramName: string): string | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return (
+    new URLSearchParams(window.location.search).get(paramName) ?? undefined
+  );
+}
+
+function resolveHiddenFieldValue(field?: MarketoField): string {
+  if (!field || field.Datatype !== "hidden") {
+    return "";
+  }
+
+  const sourceChannel = field.InputSourceChannel?.toLowerCase();
+  const sourceSelector = field.InputSourceSelector?.trim();
+
+  if (!sourceChannel) {
+    return "";
+  }
+
+  switch (sourceChannel) {
+    case "constant":
+      return field.InputInitialValue ?? "";
+    case "cookie":
+    case "cookies":
+      if (!sourceSelector) {
+        return "";
+      }
+      return resolveCookieValue(sourceSelector) ?? "";
+    case "url":
+      if (!sourceSelector) {
+        return "";
+      }
+      return resolveQueryValue(sourceSelector) ?? "";
+    default:
+      return "";
+  }
+}
+
 export async function fetchMarketoForm(
   baseUrl: string,
   munchkinId: string,
@@ -118,15 +176,21 @@ export async function fetchMarketoForm(
     );
 
   const data = (await res.json()) as MarketoFormResponse;
-
   console.log(data);
-  const fields = data.rows
-    .map((row) => row[0])
-    .filter(Boolean)
+
+  const rawFields = data.rows.map((row) => row[0]).filter(Boolean);
+
+  const fields = rawFields
     .map((field) => mapField(field, formId))
     .filter((f): f is FormField => f !== null);
 
-  const defaultValues = Object.fromEntries(fields.map((f) => [f.name, ""]));
+  const rawFieldByName = new Map(rawFields.map((field) => [field.Name, field]));
+  const defaultValues = Object.fromEntries(
+    fields.map((field) => [
+      field.name,
+      resolveHiddenFieldValue(rawFieldByName.get(field.name)),
+    ]),
+  );
 
   return { fields, defaultValues };
 }
