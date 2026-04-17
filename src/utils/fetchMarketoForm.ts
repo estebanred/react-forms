@@ -105,6 +105,14 @@ export type MarketoFormData = {
   defaultValues: Record<string, string>;
 };
 
+function safeDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function resolveCookieValue(cookieName: string): string | undefined {
   if (typeof document === "undefined") {
     return undefined;
@@ -116,7 +124,7 @@ function resolveCookieValue(cookieName: string): string | undefined {
       continue;
     }
 
-    return decodeURIComponent(valueParts.join("="));
+    return safeDecodeURIComponent(valueParts.join("="));
   }
 
   return undefined;
@@ -137,29 +145,30 @@ function resolveHiddenFieldValue(field?: MarketoField): string {
     return "";
   }
 
+  const fallbackValue = field.InputInitialValue ?? "";
   const sourceChannel = field.InputSourceChannel?.toLowerCase();
   const sourceSelector = field.InputSourceSelector?.trim();
 
   if (!sourceChannel) {
-    return "";
+    return fallbackValue;
   }
 
   switch (sourceChannel) {
     case "constant":
-      return field.InputInitialValue ?? "";
+      return fallbackValue;
     case "cookie":
     case "cookies":
       if (!sourceSelector) {
-        return "";
+        return fallbackValue;
       }
-      return resolveCookieValue(sourceSelector) ?? "";
+      return resolveCookieValue(sourceSelector) ?? fallbackValue;
     case "url":
       if (!sourceSelector) {
-        return "";
+        return fallbackValue;
       }
-      return resolveQueryValue(sourceSelector) ?? "";
+      return resolveQueryValue(sourceSelector) ?? fallbackValue;
     default:
-      return "";
+      return fallbackValue;
   }
 }
 
