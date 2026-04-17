@@ -3,64 +3,13 @@ import type {
   FormFieldOption,
   VisibilityRule,
 } from "../types/FormData";
+import type {
+  MarketoField,
+  MarketoFormResponse,
+  MarketoPicklistValue,
+  MarketoVisibilityRule,
+} from "../types/MarketoFormResponse";
 import { resolveValidationMessageOverride } from "../config/validationMessageOverrides";
-
-type MarketoDatatype =
-  | "string"
-  | "email"
-  | "phone"
-  | "picklist"
-  | "boolean"
-  | "htmltext"
-  | "checkbox"
-  | "hidden"
-  | "textarea"
-  | "url"
-  | "integer"
-  | "float"
-  | "currency"
-  | "percent"
-  | "score"
-  | "date"
-  | "datetime";
-
-type MarketoPicklistValue = {
-  label: string;
-  value: string;
-  selected?: boolean;
-  isDefault?: boolean;
-};
-
-type MarketoVisibilityRuleItem = {
-  subjectField: string;
-  fieldLabel?: string;
-  operator: string;
-  values?: string[];
-  altLabel?: string | null;
-  picklistFilterValues?: MarketoPicklistValue[];
-};
-
-type MarketoVisibilityRule = {
-  defaultVisibility?: "hide" | "show";
-  rules?: MarketoVisibilityRuleItem[];
-};
-
-type MarketoField = {
-  Id: number;
-  Name: string;
-  IsRequired?: boolean;
-  Datatype: MarketoDatatype;
-  InputLabel?: string;
-  InputInitialValue?: string;
-  PicklistValues?: MarketoPicklistValue[];
-  Htmltext?: string;
-  ValidationMessage?: string;
-  VisibilityRule?: MarketoVisibilityRule;
-};
-
-type MarketoFormResponse = {
-  rows: MarketoField[][];
-};
 
 function mapOptions(values: MarketoPicklistValue[] = []): FormFieldOption[] {
   return values
@@ -99,7 +48,7 @@ function mapField(field: MarketoField, formId: number): FormField | null {
   const base = {
     name: field.Name,
     label: field.InputLabel ?? "",
-    placeholder: field.Htmltext,
+    placeholder: field.PlaceholderText ?? field.Htmltext,
     required: field.IsRequired ?? false,
     validationMessage: customValidationMessage ?? marketoValidationMessage,
     visibilityRule: mapVisibilityRule(field.VisibilityRule),
@@ -136,6 +85,8 @@ function mapField(field: MarketoField, formId: number): FormField | null {
       return { ...base, type: "Boolean" };
     case "picklist":
       return { ...base, type: "Select", options };
+    case "radio":
+      return { ...base, type: "Radio", options };
     case "checkbox":
       return options.length > 1
         ? { ...base, type: "Checkbox", options }
