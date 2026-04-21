@@ -1,0 +1,2 @@
+-Always use pnpm 
+-Make sure tests pass before marking the task completed
