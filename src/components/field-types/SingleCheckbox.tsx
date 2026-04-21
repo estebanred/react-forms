@@ -25,6 +25,7 @@ function SingleCheckbox({
 }: SingleCheckboxProps) {
   const checkboxLabel = option?.label ?? label;
   const checkedValue = option?.value ?? "true";
+  const showInlineRequiredMarker = Boolean(required && (!option || !label));
 
   return (
     <form.Field name={name} validators={getFieldValidator({ type, required, validationMessage })}>
@@ -33,6 +34,7 @@ function SingleCheckbox({
           error={field.state.meta.errors[0]}
           isTouched={field.state.meta.isTouched}
           label={option ? label : ""}
+          required={option ? required : false}
         >
           <div className="flex items-center gap-3 cursor-pointer">
             <input
@@ -49,6 +51,9 @@ function SingleCheckbox({
               className="text-sm text-white"
               dangerouslySetInnerHTML={{ __html: checkboxLabel }}
             />
+            {showInlineRequiredMarker ? (
+              <span className="text-sm text-red-300">*</span>
+            ) : null}
           </div>
         </FieldLayout>
       )}

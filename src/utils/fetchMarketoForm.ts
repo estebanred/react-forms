@@ -185,7 +185,6 @@ export async function fetchMarketoForm(
     );
 
   const data = (await res.json()) as MarketoFormResponse;
-  console.log(data);
 
   const rawFields = data.rows.map((row) => row[0]).filter(Boolean);
 

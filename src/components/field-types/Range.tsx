@@ -23,6 +23,7 @@ function Range({ form, label, name, min, max, required, validationMessage, type 
           error={field.state.meta.errors[0]}
           isTouched={field.state.meta.isTouched}
           label={label}
+          required={required}
         >
           <div className="flex items-center gap-4">
             <input

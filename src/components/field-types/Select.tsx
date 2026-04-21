@@ -22,6 +22,7 @@ function Select({ form, label, name, options, required, validationMessage, type 
           error={field.state.meta.errors[0]}
           isTouched={field.state.meta.isTouched}
           label={label}
+          required={required}
         >
           <select
             className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400"
