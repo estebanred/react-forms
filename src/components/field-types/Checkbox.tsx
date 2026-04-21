@@ -32,6 +32,7 @@ function Checkbox({ form, label, name, options, required, validationMessage, typ
             error={field.state.meta.errors[0]}
             isTouched={field.state.meta.isTouched}
             label={label}
+            required={required}
           >
             <div className="space-y-2">
               {options.map((opt) => (

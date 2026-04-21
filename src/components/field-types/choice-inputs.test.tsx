@@ -255,6 +255,21 @@ describe("SingleCheckbox field", () => {
     expect(form.state.values[field.name]).toBe("yes");
   });
 
+  it("keeps the required marker inline when the visible label comes from option.label", () => {
+    const field = makeField({
+      label: "",
+      required: true,
+      option: { label: "<strong>Accept</strong> terms", value: "yes" },
+    } as Partial<FormField>);
+    const { container } = renderField(field);
+
+    const requiredMarker = Array.from(container.querySelectorAll("span")).find(
+      (element) => element.textContent === "*",
+    );
+
+    expect(requiredMarker).toBeInTheDocument();
+  });
+
   it("clears the value back to empty when unchecked", () => {
     const field = makeField();
     const { container, form } = renderField(field);
