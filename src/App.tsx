@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMarketoForm } from "./utils/fetchMarketoForm";
@@ -29,11 +29,27 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
     marketoSubmitRef.current = marketo.submit;
   }, [marketo.submit]);
 
+  const nonSubmittableFieldNames = useMemo(
+    () =>
+      new Set(
+        fields
+          .filter((field) => field.type === "HtmlText")
+          .map((field) => field.name),
+      ),
+    [fields],
+  );
+
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
-      await marketoSubmitRef.current(value);
-      setSubmittedValue(value);
+      const payload = Object.fromEntries(
+        Object.entries(value).filter(
+          ([name]) => !nonSubmittableFieldNames.has(name),
+        ),
+      ) as FormValues;
+      console.log(payload);
+      await marketoSubmitRef.current(payload);
+      setSubmittedValue(payload);
     },
   });
 
@@ -78,7 +94,9 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
                   <button
                     className="rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-stone-600 disabled:text-stone-300"
                     type="submit"
-                    disabled={!canSubmit || isSubmitting || marketo.status !== "ready"}
+                    disabled={
+                      !canSubmit || isSubmitting || marketo.status !== "ready"
+                    }
                   >
                     {isSubmitting
                       ? "Submitting..."
