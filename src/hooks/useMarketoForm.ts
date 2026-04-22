@@ -3,13 +3,12 @@ import { useMarketoFormsScript } from "./useMarketoFormsScript";
 import type { FormValues } from "../types/FormData";
 import type { MktoForm } from "../types/MarketoForms2";
 
-type MarketoFormStatus = "idle" | "loading" | "ready" | "error";
+type MarketoFormStatus = "loading" | "ready" | "error";
 
 type UseMarketoFormOptions = {
   marketoOrigin: string | undefined;
   munchkinId: string | undefined;
   formId: number;
-  enabled: boolean;
 };
 
 type UseMarketoFormResult = {
@@ -26,34 +25,6 @@ type PendingSubmission = {
 
 const SUBMIT_TIMEOUT_MS = 15_000;
 
-function createMissingConfigError() {
-  return new Error("Marketo form configuration is incomplete.");
-}
-
-function createMissingGlobalError() {
-  return new Error("Marketo Forms 2.0 script loaded without MktoForms2.");
-}
-
-function createMissingPlaceholderError(formId: number) {
-  return new Error(`Missing hidden Marketo placeholder form for ID ${formId}.`);
-}
-
-function createLoadTimeoutError() {
-  return new Error("Timed out waiting for the Marketo submission to finish.");
-}
-
-function createValidationError() {
-  return new Error("Marketo validation blocked the submission.");
-}
-
-function createNotReadyError() {
-  return new Error("Marketo form is not ready yet.");
-}
-
-function createInFlightError() {
-  return new Error("A Marketo submission is already in flight.");
-}
-
 function normalizeFormValues(values: FormValues): FormValues {
   return Object.fromEntries(
     Object.entries(values).map(([key, value]) => [key, value ?? ""]),
@@ -64,47 +35,47 @@ export function useMarketoForm({
   marketoOrigin,
   munchkinId,
   formId,
-  enabled,
 }: UseMarketoFormOptions): UseMarketoFormResult {
   const script = useMarketoFormsScript(marketoOrigin);
   const [state, setState] = useState<{
     error: Error | null;
     status: MarketoFormStatus;
   }>({
-    status: enabled ? "loading" : "idle",
+    status: "loading",
     error: null,
   });
   const formRef = useRef<MktoForm | null>(null);
   const loadedKeyRef = useRef<string | null>(null);
   const pendingSubmissionRef = useRef<PendingSubmission | null>(null);
 
-  const settleSubmission = useCallback((settler: "resolve" | "reject", error?: Error) => {
-    const pending = pendingSubmissionRef.current;
-    if (!pending) {
-      return;
-    }
+  const settleSubmission = useCallback(
+    (settler: "resolve" | "reject", error?: Error) => {
+      const pending = pendingSubmissionRef.current;
+      if (!pending) {
+        return;
+      }
 
-    window.clearTimeout(pending.timeoutId);
-    pendingSubmissionRef.current = null;
+      window.clearTimeout(pending.timeoutId);
+      pendingSubmissionRef.current = null;
 
-    if (settler === "resolve") {
-      pending.resolve();
-      return;
-    }
+      if (settler === "resolve") {
+        pending.resolve();
+        return;
+      }
 
-    pending.reject(error ?? createLoadTimeoutError());
-  }, []);
+      pending.reject(
+        error ??
+          new Error("Timed out waiting for the Marketo submission to finish."),
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
-    if (!enabled) {
-      setState({ status: "idle", error: null });
-      return;
-    }
-
     if (!marketoOrigin || !munchkinId || !Number.isFinite(formId)) {
       setState({
         status: "error",
-        error: createMissingConfigError(),
+        error: new Error("Marketo form configuration is incomplete."),
       });
       return;
     }
@@ -120,7 +91,10 @@ export function useMarketoForm({
     }
 
     if (!window.MktoForms2) {
-      setState({ status: "error", error: createMissingGlobalError() });
+      setState({
+        status: "error",
+        error: new Error("Marketo Forms 2.0 script loaded without MktoForms2."),
+      });
       return;
     }
 
@@ -134,7 +108,9 @@ export function useMarketoForm({
     if (!placeholder) {
       setState({
         status: "error",
-        error: createMissingPlaceholderError(formId),
+        error: new Error(
+          `Missing hidden Marketo placeholder form for ID ${formId}.`,
+        ),
       });
       return;
     }
@@ -153,11 +129,6 @@ export function useMarketoForm({
         settleSubmission("resolve");
         return false;
       });
-      form.onValidate((isValid) => {
-        if (!isValid) {
-          settleSubmission("reject", createValidationError());
-        }
-      });
 
       setState({ status: "ready", error: null });
     });
@@ -166,7 +137,6 @@ export function useMarketoForm({
       cancelled = true;
     };
   }, [
-    enabled,
     formId,
     marketoOrigin,
     munchkinId,
@@ -179,27 +149,24 @@ export function useMarketoForm({
     (values: FormValues) => {
       const form = formRef.current;
       if (!form || state.status !== "ready") {
-        return Promise.reject(createNotReadyError());
-      }
-
-      if (pendingSubmissionRef.current) {
-        return Promise.reject(createInFlightError());
+        return Promise.reject(new Error("Marketo form is not ready yet."));
       }
 
       return new Promise<void>((resolve, reject) => {
         const timeoutId = window.setTimeout(() => {
-          settleSubmission("reject", createLoadTimeoutError());
+          settleSubmission(
+            "reject",
+            new Error(
+              "Timed out waiting for the Marketo submission to finish.",
+            ),
+          );
         }, SUBMIT_TIMEOUT_MS);
-        const normalizedValues = normalizeFormValues(values);
 
-        pendingSubmissionRef.current = {
-          resolve,
-          reject,
-          timeoutId,
-        };
+        pendingSubmissionRef.current = { resolve, reject, timeoutId };
 
-        form.setValues(normalizedValues);
-        form.addHiddenFields(normalizedValues);
+        // React drives validation; force Marketo to accept the submission
+        // without re-validating against its hidden injected DOM.
+        form.setValues(normalizeFormValues(values));
         form.submittable(true);
         form.submit();
       });

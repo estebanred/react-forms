@@ -20,7 +20,7 @@ const mockedUseMarketoForm = vi.mocked(useMarketoForm);
 
 type MockMarketoState = {
   error: Error | null;
-  status: "idle" | "loading" | "ready" | "error";
+  status: "loading" | "ready" | "error";
   submit: (values: FormValues) => Promise<void>;
 };
 
@@ -106,7 +106,10 @@ describe("App", () => {
       ).toBeEnabled();
     });
 
-    await user.type(screen.getByRole("textbox", { name: "First Name" }), "Esteban");
+    await user.type(
+      screen.getByRole("textbox", { name: "First Name" }),
+      "Esteban",
+    );
     await user.click(screen.getByRole("button", { name: "Send message" }));
 
     await waitFor(() => {

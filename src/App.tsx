@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMarketoForm } from "./utils/fetchMarketoForm";
@@ -12,7 +12,6 @@ const MARKETO_BASE_URL = import.meta.env.VITE_MARKETO_BASE_URL;
 const MARKETO_URL = import.meta.env.VITE_MARKETO_URL;
 const MUNCHKIN_ID = import.meta.env.VITE_MUNCHKIN_ID;
 const FORM_ID = Number(import.meta.env.VITE_FORM_ID);
-
 // ────────────────────────────────────────────────────────────────────────────
 
 function FormContainer({ fields, defaultValues }: MarketoFormData) {
@@ -21,13 +20,7 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
     marketoOrigin: MARKETO_URL,
     munchkinId: MUNCHKIN_ID,
     formId: FORM_ID,
-    enabled: true,
   });
-  const marketoSubmitRef = useRef(marketo.submit);
-
-  useEffect(() => {
-    marketoSubmitRef.current = marketo.submit;
-  }, [marketo.submit]);
 
   const nonSubmittableFieldNames = useMemo(
     () =>
@@ -47,8 +40,7 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
           ([name]) => !nonSubmittableFieldNames.has(name),
         ),
       ) as FormValues;
-      console.log(payload);
-      await marketoSubmitRef.current(payload);
+      await marketo.submit(payload);
       setSubmittedValue(payload);
     },
   });
@@ -156,7 +148,16 @@ function App() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["marketoForm", MUNCHKIN_ID, FORM_ID],
     queryFn: () => fetchMarketoForm(MARKETO_BASE_URL, MUNCHKIN_ID, FORM_ID),
+    enabled: Number.isFinite(FORM_ID),
   });
+
+  if (!Number.isFinite(FORM_ID)) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-stone-950 text-red-400">
+        VITE_FORM_ID is missing or invalid.
+      </main>
+    );
+  }
 
   if (isLoading) {
     return (

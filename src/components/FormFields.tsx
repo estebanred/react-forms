@@ -115,7 +115,7 @@ function FormFields({ form, fields }: FormFieldsProps) {
       case "Range":
         return <Range key={field.name} form={form} {...field} />;
       case "HtmlText":
-        return <HtmlText key={field.name} form={form} {...field} />;
+        return <HtmlText key={field.name} {...field} />;
       case "Hidden":
         return <Hidden key={field.name} form={form} {...field} />;
     }

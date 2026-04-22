@@ -6,9 +6,12 @@ import basicSsl from "@vitejs/plugin-basic-ssl";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  const isDev = mode === "development";
 
   return {
-    plugins: [react(), tailwindcss(), basicSsl()],
+    // HTTPS is enabled in dev so Marketo Munchkin tracking cookies
+    // (which require a secure context for cross-site use) work locally.
+    plugins: [react(), tailwindcss(), ...(isDev ? [basicSsl()] : [])],
     server: {
       proxy: {
         "/marketo-api": {
