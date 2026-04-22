@@ -1,24 +1,38 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMarketoForm } from "./utils/fetchMarketoForm";
 import type { MarketoFormData } from "./utils/fetchMarketoForm";
 import FormFields from "./components/FormFields";
 import type { FormValues } from "./types/FormData";
+import { useMarketoForm } from "./hooks/useMarketoForm";
 
 // ── Marketo form config ──────────────────────────────────────────────────────
 const MARKETO_BASE_URL = import.meta.env.VITE_MARKETO_BASE_URL;
+const MARKETO_URL = import.meta.env.VITE_MARKETO_URL;
 const MUNCHKIN_ID = import.meta.env.VITE_MUNCHKIN_ID;
-const FORM_ID = import.meta.env.VITE_FORM_ID;
+const FORM_ID = Number(import.meta.env.VITE_FORM_ID);
 
 // ────────────────────────────────────────────────────────────────────────────
 
 function FormContainer({ fields, defaultValues }: MarketoFormData) {
   const [submittedValue, setSubmittedValue] = useState<FormValues | null>(null);
+  const marketo = useMarketoForm({
+    marketoOrigin: MARKETO_URL,
+    munchkinId: MUNCHKIN_ID,
+    formId: FORM_ID,
+    enabled: true,
+  });
+  const marketoSubmitRef = useRef(marketo.submit);
+
+  useEffect(() => {
+    marketoSubmitRef.current = marketo.submit;
+  }, [marketo.submit]);
 
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
+      await marketoSubmitRef.current(value);
       setSubmittedValue(value);
     },
   });
@@ -28,6 +42,13 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur sm:p-10">
           <form
+            key={`mkto-${FORM_ID}`}
+            id={`mktoForm_${FORM_ID}`}
+            style={{ display: "none" }}
+            aria-hidden="true"
+          />
+
+          <form
             className="space-y-6"
             onSubmit={(event) => {
               event.preventDefault();
@@ -36,6 +57,16 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
             }}
           >
             <FormFields form={form} fields={fields} />
+
+            {marketo.status === "error" ? (
+              <div
+                className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+                role="alert"
+              >
+                Failed to prepare Marketo submission:{" "}
+                {marketo.error?.message ?? "Unknown error"}
+              </div>
+            ) : null}
 
             <div className="flex flex-wrap items-center gap-3">
               <form.Subscribe
@@ -47,9 +78,13 @@ function FormContainer({ fields, defaultValues }: MarketoFormData) {
                   <button
                     className="rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-stone-600 disabled:text-stone-300"
                     type="submit"
-                    disabled={!canSubmit}
+                    disabled={!canSubmit || isSubmitting || marketo.status !== "ready"}
                   >
-                    {isSubmitting ? "Submitting..." : "Send message"}
+                    {isSubmitting
+                      ? "Submitting..."
+                      : marketo.status !== "ready"
+                        ? "Preparing..."
+                        : "Send message"}
                   </button>
                 )}
               </form.Subscribe>
